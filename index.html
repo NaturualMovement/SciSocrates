@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+
+  <title>개념을 발견하는 과학 탐구 챗봇</title>
+
+  <style>
+    :root {
+      --navy: #16324f;
+      --blue: #2563eb;
+      --green: #16846a;
+      --sky: #e8f3ff;
+      --mint: #dff7ec;
+      --yellow: #fff2bd;
+      --white: #ffffff;
+      --ink: #203040;
+      --muted: #607080;
+      --line: #d9e5ef;
+      --shadow: 0 18px 50px rgba(34, 68, 104, 0.14);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      font-family:
+        "Pretendard",
+        "Noto Sans KR",
+        "Apple SD Gothic Neo",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background:
+        radial-gradient(
+          circle at 8% 10%,
+          rgba(124, 211, 252, 0.28),
+          transparent 22%
+        ),
+        radial-gradient(
+          circle at 92% 18%,
+          rgba(134, 239, 172, 0.24),
+          transparent 24%
+        ),
+        #f5f9fc;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1500px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 18px 0 30px;
+    }
+
+    /* 위쪽 제목 영역 */
+    .topbar {
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+
+      padding: 14px 18px;
+
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 22px;
+
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(14px);
+
+      box-shadow: 0 10px 36px rgba(42, 73, 108, 0.09);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 15px;
+
+      color: white;
+      font-size: 25px;
+
+      background: linear-gradient(145deg, #1d75df, #18a777);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--navy);
+      font-size: 17px;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .grade-badge {
+      padding: 9px 13px;
+
+      border: 1px solid #b9ead6;
+      border-radius: 999px;
+
+      background: var(--mint);
+      color: #0b6248;
+
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* 소개 영역 */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+      align-items: center;
+      gap: 30px;
+
+      padding: 62px 30px 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-bottom: 14px;
+      padding: 7px 12px;
+
+      border-radius: 999px;
+
+      color: #155ca8;
+      background: var(--sky);
+
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      max-width: 740px;
+      margin: 0;
+
+      color: var(--navy);
+
+      font-size: clamp(34px, 5vw, 66px);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+      word-break: keep-all;
+    }
+
+    h1 em {
+      color: var(--blue);
+      font-style: normal;
+    }
+
+    .hero-copy p {
+      max-width: 680px;
+      margin: 20px 0 24px;
+
+      color: #536779;
+
+      font-size: clamp(16px, 1.8vw, 20px);
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .legend span {
+      padding: 8px 11px;
+
+      border: 1px solid var(--line);
+      border-radius: 11px;
+
+      background: white;
+      color: #425466;
+
+      box-shadow: 0 5px 14px rgba(40, 70, 105, 0.05);
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* 개념기반 탐구학습 시각화 */
+    .concept-map {
+      position: relative;
+
+      min-height: 330px;
+
+      display: grid;
+      place-items: center;
+
+      overflow: hidden;
+
+      border: 1px solid #d8e5ef;
+      border-radius: 34px;
+
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow);
+    }
+
+    .orbit {
+      position: absolute;
+
+      width: 255px;
+      height: 255px;
+
+      border: 2px dashed #bdd4e8;
+      border-radius: 50%;
+
+      animation: spin 30s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .core {
+      z-index: 2;
+
+      width: 148px;
+      height: 148px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      color: white;
+      background: linear-gradient(145deg, #2468da, #20a471);
+
+      box-shadow: 0 16px 30px rgba(31, 113, 158, 0.25);
+
+      text-align: center;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .node {
+      position: absolute;
+
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      padding: 10px 13px;
+
+      border: 1px solid #d8e5ef;
+      border-radius: 16px;
+
+      background: white;
+      box-shadow: 0 8px 20px rgba(40, 70, 105, 0.10);
+
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .node-top {
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .node-right {
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+    }
+
+    .node-bottom {
+      bottom: 29px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .node-left {
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+    }
+
+    /* 탐구학습 단계 */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+
+      margin: 0 30px 22px;
+    }
+
+    .step {
+      position: relative;
+
+      min-height: 104px;
+      padding: 15px;
+
+      overflow: hidden;
+
+      border: 1px solid var(--line);
+      border-radius: 18px;
+
+      background: white;
+    }
+
+    .step::after {
+      content: "";
+
+      position: absolute;
+      right: -10px;
+      bottom: -12px;
+
+      width: 48px;
+      height: 48px;
+
+      border-radius: 50%;
+      background: var(--tint, #e8f3ff);
+    }
+
+    .step b {
+      display: block;
+      color: var(--blue);
+      font-size: 12px;
+    }
+
+    .step strong {
+      display: block;
+      margin: 6px 0 3px;
+
+      color: var(--navy);
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* 챗봇 활용 영역 */
+    .workspace {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .guide {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+
+      padding: 22px;
+
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+
+      background: white;
+      box-shadow: 0 12px 34px rgba(42, 73, 108, 0.08);
+    }
+
+    .guide h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 23px;
+    }
+
+    .guide > p {
+      margin: -6px 0 3px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .prompt {
+      width: 100%;
+      padding: 14px;
+
+      border: 1px solid #dbe6ef;
+      border-radius: 16px;
+
+      color: #33495c;
+      background: #f8fbfd;
+
+      text-align: left;
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .prompt:hover,
+    .prompt:focus-visible {
+      transform: translateY(-2px);
+
+      border-color: #94bff1;
+      background: #f0f7ff;
+
+      outline: none;
+    }
+
+    .prompt strong {
+      display: block;
+      margin-bottom: 4px;
+
+      color: #1b5ca8;
+      font-size: 13px;
+    }
+
+    .prompt span {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .teacher-tip {
+      margin-top: auto;
+      padding: 15px;
+
+      border-radius: 16px;
+
+      color: #6d5310;
+      background: var(--yellow);
+
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    /* 챗봇 창 */
+    .chat-card {
+      position: relative;
+
+      min-height: 760px;
+
+      overflow: hidden;
+
+      border: 1px solid #cadbea;
+      border-radius: var(--radius);
+
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .chat-head {
+      height: 58px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+
+      padding: 0 18px;
+
+      color: white;
+      background: linear-gradient(100deg, #174e92, #167b71);
+    }
+
+    .chat-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      font-weight: 850;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      font-size: 12px;
+      opacity: 0.92;
+    }
+
+    .status i {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #79f2b8;
+      box-shadow: 0 0 0 4px rgba(121, 242, 184, 0.15);
+    }
+
+    .notice {
+      display: none;
+
+      margin: 12px 18px 0;
+      padding: 12px;
+
+      border-radius: 12px;
+
+      color: #775915;
+      background: #fff5cc;
+
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    iframe {
+      display: block;
+
+      width: 100%;
+      height: 700px;
+
+      border: 0;
+      background: white;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      padding: 20px 8px 0;
+
+      color: #718191;
+      font-size: 12px;
+    }
+
+    /* 태블릿 화면 */
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 44px;
+      }
+
+      .concept-map {
+        min-height: 310px;
+      }
+
+      .flow {
+        grid-template-columns: repeat(5, minmax(150px, 1fr));
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .guide {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .guide h2,
+      .guide > p,
+      .teacher-tip {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* 스마트폰 화면 */
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 18px, 1500px);
+      }
+
+      .topbar {
+        top: 5px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .grade-badge {
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+
+      .hero {
+        padding: 38px 8px 24px;
+      }
+
+      .flow {
+        margin-right: 8px;
+        margin-left: 8px;
+      }
+
+      .guide {
+        grid-template-columns: 1fr;
+        padding: 17px;
+      }
+
+      .guide h2,
+      .guide > p,
+      .teacher-tip {
+        grid-column: auto;
+      }
+
+      .concept-map {
+        min-height: 290px;
+      }
+
+      .orbit {
+        width: 220px;
+        height: 220px;
+      }
+
+      .core {
+        width: 125px;
+        height: 125px;
+        font-size: 19px;
+      }
+
+      .node {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .node-right {
+        right: 8px;
+      }
+
+      .node-left {
+        left: 8px;
+      }
+
+      .chat-card {
+        min-height: 680px;
+      }
+
+      iframe {
+        height: 620px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+      }
+
+      .orbit {
+        animation: none;
+      }
+
+      .prompt {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- 위쪽 제목 -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🔬</div>
+
+        <div>
+          <strong>개념을 발견하는 과학 탐구실</strong>
+          <span>질문에서 시작해 개념으로 연결하는 교사용 AI 챗봇</span>
+        </div>
+      </div>
+
+      <div class="grade-badge">
+        초등 3~6학년 · 교사용
+      </div>
+    </header>
+
+    <main>
+
+      <!-- 개념기반 탐구학습 소개 -->
+      <section class="hero" aria-labelledby="main-title">
+
+        <div class="hero-copy">
+          <div class="eyebrow">
+            💡 CONCEPT-BASED INQUIRY SCIENCE
+          </div>
+
+          <h1 id="main-title">
+            현상을 묻고,<br>
+            <em>개념을 연결하는</em> 과학 수업
+          </h1>
+
+          <p>
+            학생의 호기심을 출발점으로 질문, 탐구, 증거, 설명을
+            이어 갑니다. 챗봇과 함께 단편적인 지식을 넘어
+            다른 상황에도 적용할 수 있는 과학 개념을 발견해 보세요.
+          </p>
+
+          <div class="legend" aria-label="수업 핵심 요소">
+            <span>🔎 현상 관찰</span>
+            <span>❓ 탐구 질문</span>
+            <span>🧪 증거 수집</span>
+            <span>🧩 개념 연결</span>
+            <span>🌏 새로운 상황에 전이</span>
+          </div>
+        </div>
+
+        <!-- 개념기반 탐구학습 이미지 -->
+        <div
+          class="concept-map"
+          role="img"
+          aria-label="현상, 질문, 증거, 전이가 핵심 개념을 중심으로 연결된 개념기반 탐구학습 이미지"
+        >
+          <div class="orbit" aria-hidden="true"></div>
+
+          <div class="core">
+            핵심 개념<br>
+            발견하기
+          </div>
+
+          <div class="node node-top">
+            👀 현상
+          </div>
+
+          <div class="node node-right">
+            ❓ 질문
+          </div>
+
+          <div class="node node-bottom">
+            🌱 전이
+          </div>
+
+          <div class="node node-left">
+            🧪 증거
+          </div>
+        </div>
+      </section>
+
+      <!-- 탐구학습 흐름 -->
+      <section class="flow" aria-label="개념기반 탐구학습 흐름">
+
+        <div class="step" style="--tint: #e6f2ff;">
+          <b>01 ENGAGE</b>
+          <strong>현상 만나기</strong>
+          <span>호기심을 일으키는 장면을 만납니다.</span>
+        </div>
+
+        <div class="step" style="--tint: #e7f8ef;">
+          <b>02 QUESTION</b>
+          <strong>질문 만들기</strong>
+          <span>알고 싶은 것을 탐구 질문으로 만듭니다.</span>
+        </div>
+
+        <div class="step" style="--tint: #fff3c7;">
+          <b>03 INQUIRE</b>
+          <strong>탐구하기</strong>
+          <span>관찰, 측정, 비교를 통해 증거를 수집합니다.</span>
+        </div>
+
+        <div class="step" style="--tint: #f1eaff;">
+          <b>04 CONCEPTUALIZE</b>
+          <strong>개념화하기</strong>
+          <span>현상에 숨어 있는 공통 원리와 관계를 설명합니다.</span>
+        </div>
+
+        <div class="step" style="--tint: #ffe9df;">
+          <b>05 TRANSFER</b>
+          <strong>전이하기</strong>
+          <span>발견한 개념을 새로운 현상에 적용합니다.</span>
+        </div>
+      </section>
+
+      <!-- 교사용 활용 영역 -->
+      <section class="workspace" aria-label="교사용 챗봇 활용 공간">
+
+        <aside class="guide">
+          <h2>수업 설계 도우미</h2>
+
+          <p>
+            아래 예시를 누르면 질문이 복사됩니다.
+            복사한 질문을 오른쪽 챗봇 입력창에 붙여 넣으세요.
+          </p>
+
+          <button
+            
