@@ -1,814 +1,148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light">
-
-  <title>개념을 발견하는 과학 탐구 챗봇</title>
-
-  <style>
-    :root {
-      --navy: #16324f;
-      --blue: #2563eb;
-      --green: #16846a;
-      --sky: #e8f3ff;
-      --mint: #dff7ec;
-      --yellow: #fff2bd;
-      --white: #ffffff;
-      --ink: #203040;
-      --muted: #607080;
-      --line: #d9e5ef;
-      --shadow: 0 18px 50px rgba(34, 68, 104, 0.14);
-      --radius: 24px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      color: var(--ink);
-      font-family:
-        "Pretendard",
-        "Noto Sans KR",
-        "Apple SD Gothic Neo",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      background:
-        radial-gradient(
-          circle at 8% 10%,
-          rgba(124, 211, 252, 0.28),
-          transparent 22%
-        ),
-        radial-gradient(
-          circle at 92% 18%,
-          rgba(134, 239, 172, 0.24),
-          transparent 24%
-        ),
-        #f5f9fc;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    .shell {
-      width: min(1500px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 18px 0 30px;
-    }
-
-    /* 위쪽 제목 영역 */
-    .topbar {
-      position: sticky;
-      top: 10px;
-      z-index: 20;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-
-      padding: 14px 18px;
-
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 22px;
-
-      background: rgba(255, 255, 255, 0.86);
-      backdrop-filter: blur(14px);
-
-      box-shadow: 0 10px 36px rgba(42, 73, 108, 0.09);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .brand-mark {
-      width: 46px;
-      height: 46px;
-      flex: 0 0 auto;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 15px;
-
-      color: white;
-      font-size: 25px;
-
-      background: linear-gradient(145deg, #1d75df, #18a777);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
-    }
-
-    .brand strong {
-      display: block;
-      color: var(--navy);
-      font-size: 17px;
-    }
-
-    .brand span {
-      display: block;
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .grade-badge {
-      padding: 9px 13px;
-
-      border: 1px solid #b9ead6;
-      border-radius: 999px;
-
-      background: var(--mint);
-      color: #0b6248;
-
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    /* 소개 영역 */
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
-      align-items: center;
-      gap: 30px;
-
-      padding: 62px 30px 34px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-
-      margin-bottom: 14px;
-      padding: 7px 12px;
-
-      border-radius: 999px;
-
-      color: #155ca8;
-      background: var(--sky);
-
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    h1 {
-      max-width: 740px;
-      margin: 0;
-
-      color: var(--navy);
-
-      font-size: clamp(34px, 5vw, 66px);
-      line-height: 1.08;
-      letter-spacing: -0.045em;
-      word-break: keep-all;
-    }
-
-    h1 em {
-      color: var(--blue);
-      font-style: normal;
-    }
-
-    .hero-copy p {
-      max-width: 680px;
-      margin: 20px 0 24px;
-
-      color: #536779;
-
-      font-size: clamp(16px, 1.8vw, 20px);
-      line-height: 1.75;
-      word-break: keep-all;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-    }
-
-    .legend span {
-      padding: 8px 11px;
-
-      border: 1px solid var(--line);
-      border-radius: 11px;
-
-      background: white;
-      color: #425466;
-
-      box-shadow: 0 5px 14px rgba(40, 70, 105, 0.05);
-
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* 개념기반 탐구학습 시각화 */
-    .concept-map {
-      position: relative;
-
-      min-height: 330px;
-
-      display: grid;
-      place-items: center;
-
-      overflow: hidden;
-
-      border: 1px solid #d8e5ef;
-      border-radius: 34px;
-
-      background: rgba(255, 255, 255, 0.84);
-      box-shadow: var(--shadow);
-    }
-
-    .orbit {
-      position: absolute;
-
-      width: 255px;
-      height: 255px;
-
-      border: 2px dashed #bdd4e8;
-      border-radius: 50%;
-
-      animation: spin 30s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .core {
-      z-index: 2;
-
-      width: 148px;
-      height: 148px;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 50%;
-
-      color: white;
-      background: linear-gradient(145deg, #2468da, #20a471);
-
-      box-shadow: 0 16px 30px rgba(31, 113, 158, 0.25);
-
-      text-align: center;
-      font-size: 22px;
-      font-weight: 900;
-      line-height: 1.25;
-    }
-
-    .node {
-      position: absolute;
-
-      display: flex;
-      align-items: center;
-      gap: 7px;
-
-      padding: 10px 13px;
-
-      border: 1px solid #d8e5ef;
-      border-radius: 16px;
-
-      background: white;
-      box-shadow: 0 8px 20px rgba(40, 70, 105, 0.10);
-
-      font-size: 14px;
-      font-weight: 850;
-    }
-
-    .node-top {
-      top: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .node-right {
-      top: 50%;
-      right: 20px;
-      transform: translateY(-50%);
-    }
-
-    .node-bottom {
-      bottom: 29px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .node-left {
-      top: 50%;
-      left: 20px;
-      transform: translateY(-50%);
-    }
-
-    /* 탐구학습 단계 */
-    .flow {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-
-      margin: 0 30px 22px;
-    }
-
-    .step {
-      position: relative;
-
-      min-height: 104px;
-      padding: 15px;
-
-      overflow: hidden;
-
-      border: 1px solid var(--line);
-      border-radius: 18px;
-
-      background: white;
-    }
-
-    .step::after {
-      content: "";
-
-      position: absolute;
-      right: -10px;
-      bottom: -12px;
-
-      width: 48px;
-      height: 48px;
-
-      border-radius: 50%;
-      background: var(--tint, #e8f3ff);
-    }
-
-    .step b {
-      display: block;
-      color: var(--blue);
-      font-size: 12px;
-    }
-
-    .step strong {
-      display: block;
-      margin: 6px 0 3px;
-
-      color: var(--navy);
-    }
-
-    .step span {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    /* 챗봇 활용 영역 */
-    .workspace {
-      display: grid;
-      grid-template-columns: 300px minmax(0, 1fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .guide {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-
-      padding: 22px;
-
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-
-      background: white;
-      box-shadow: 0 12px 34px rgba(42, 73, 108, 0.08);
-    }
-
-    .guide h2 {
-      margin: 0;
-      color: var(--navy);
-      font-size: 23px;
-    }
-
-    .guide > p {
-      margin: -6px 0 3px;
-
-      color: var(--muted);
-
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .prompt {
-      width: 100%;
-      padding: 14px;
-
-      border: 1px solid #dbe6ef;
-      border-radius: 16px;
-
-      color: #33495c;
-      background: #f8fbfd;
-
-      text-align: left;
-      cursor: pointer;
-
-      transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
-    }
-
-    .prompt:hover,
-    .prompt:focus-visible {
-      transform: translateY(-2px);
-
-      border-color: #94bff1;
-      background: #f0f7ff;
-
-      outline: none;
-    }
-
-    .prompt strong {
-      display: block;
-      margin-bottom: 4px;
-
-      color: #1b5ca8;
-      font-size: 13px;
-    }
-
-    .prompt span {
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .teacher-tip {
-      margin-top: auto;
-      padding: 15px;
-
-      border-radius: 16px;
-
-      color: #6d5310;
-      background: var(--yellow);
-
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    /* 챗봇 창 */
-    .chat-card {
-      position: relative;
-
-      min-height: 760px;
-
-      overflow: hidden;
-
-      border: 1px solid #cadbea;
-      border-radius: var(--radius);
-
-      background: white;
-      box-shadow: var(--shadow);
-    }
-
-    .chat-head {
-      height: 58px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-
-      padding: 0 18px;
-
-      color: white;
-      background: linear-gradient(100deg, #174e92, #167b71);
-    }
-
-    .chat-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      font-weight: 850;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-
-      font-size: 12px;
-      opacity: 0.92;
-    }
-
-    .status i {
-      width: 8px;
-      height: 8px;
-
-      border-radius: 50%;
-
-      background: #79f2b8;
-      box-shadow: 0 0 0 4px rgba(121, 242, 184, 0.15);
-    }
-
-    .notice {
-      display: none;
-
-      margin: 12px 18px 0;
-      padding: 12px;
-
-      border-radius: 12px;
-
-      color: #775915;
-      background: #fff5cc;
-
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    iframe {
-      display: block;
-
-      width: 100%;
-      height: 700px;
-
-      border: 0;
-      background: white;
-    }
-
-    footer {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-
-      padding: 20px 8px 0;
-
-      color: #718191;
-      font-size: 12px;
-    }
-
-    /* 태블릿 화면 */
-    @media (max-width: 980px) {
-      .hero {
-        grid-template-columns: 1fr;
-        padding-top: 44px;
-      }
-
-      .concept-map {
-        min-height: 310px;
-      }
-
-      .flow {
-        grid-template-columns: repeat(5, minmax(150px, 1fr));
-        overflow-x: auto;
-        padding-bottom: 5px;
-      }
-
-      .workspace {
-        grid-template-columns: 1fr;
-      }
-
-      .guide {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .guide h2,
-      .guide > p,
-      .teacher-tip {
-        grid-column: 1 / -1;
-      }
-    }
-
-    /* 스마트폰 화면 */
-    @media (max-width: 640px) {
-      .shell {
-        width: min(100% - 18px, 1500px);
-      }
-
-      .topbar {
-        top: 5px;
-      }
-
-      .brand span {
-        display: none;
-      }
-
-      .grade-badge {
-        padding: 8px 10px;
-        font-size: 11px;
-      }
-
-      .hero {
-        padding: 38px 8px 24px;
-      }
-
-      .flow {
-        margin-right: 8px;
-        margin-left: 8px;
-      }
-
-      .guide {
-        grid-template-columns: 1fr;
-        padding: 17px;
-      }
-
-      .guide h2,
-      .guide > p,
-      .teacher-tip {
-        grid-column: auto;
-      }
-
-      .concept-map {
-        min-height: 290px;
-      }
-
-      .orbit {
-        width: 220px;
-        height: 220px;
-      }
-
-      .core {
-        width: 125px;
-        height: 125px;
-        font-size: 19px;
-      }
-
-      .node {
-        padding: 8px 10px;
-        font-size: 12px;
-      }
-
-      .node-right {
-        right: 8px;
-      }
-
-      .node-left {
-        left: 8px;
-      }
-
-      .chat-card {
-        min-height: 680px;
-      }
-
-      iframe {
-        height: 620px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        scroll-behavior: auto !important;
-      }
-
-      .orbit {
-        animation: none;
-      }
-
-      .prompt {
-        transition: none;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f7f2">
+<title>생각이 자라는 과학탐구 | 개념기반 탐구 챗봇</title>
+<style>
+:root{--paper:#f6f7f2;--ink:#243c38;--muted:#647570;--green:#347a63;--line:#dce3da;--mint:#e3eee3;--white:#fffefa;--sidebar-width:clamp(390px,42vw,660px)}
+*{box-sizing:border-box}html{height:100%;scroll-behavior:auto}body{margin:0;height:100dvh;background:var(--paper);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:-.035em}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #d5813e;outline-offset:3px}button:disabled{cursor:default}a{color:inherit}
+.shell{height:100dvh;margin-right:var(--sidebar-width);padding:0 24px;display:grid;grid-template-rows:64px minmax(0,1fr) 27px}.site-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:12px;min-width:0}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0}.brand-mark{width:36px;height:36px;background:var(--green);border-radius:12px;display:grid;place-items:center;flex-shrink:0}.brand-title{font-size:17px;font-weight:800;white-space:nowrap}.brand-sub{display:block;font-size:8px;letter-spacing:.17em;margin-top:3px;color:var(--muted);font-weight:600}.header-right{display:flex;align-items:center;font-size:11px;color:var(--muted)}.header-desc{display:none}.grade-tag{border:1px solid #cbd7c9;padding:6px 10px;border-radius:30px;display:flex;align-items:center;gap:6px;white-space:nowrap}.tiny-dot{height:6px;width:6px;background:var(--green);border-radius:50%}
+#main,.main-grid,.left-column{min-height:0;min-width:0}.main-grid{height:100%;padding:16px 0 12px}.left-column{height:100%;display:flex;flex-direction:column;gap:12px;max-width:900px;margin:auto}.workspace-intro{display:flex;align-items:center;gap:18px;flex:0 0 auto;min-width:0}.intro-copy{flex:1;min-width:0}.eyebrow{display:flex;align-items:center;gap:7px;color:var(--green);font-size:11px;font-weight:700}.eyebrow:before{content:"";height:6px;width:6px;background:#e69063;border-radius:50%;flex-shrink:0}h1{font-size:30px;line-height:1.22;letter-spacing:-.065em;margin:8px 0 7px;font-weight:800}h1 em{font-style:normal;color:var(--green);position:relative;z-index:0}h1 em:after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:#dfe8b8;z-index:-1;border-radius:5px}.intro{font-size:11px;line-height:1.7;color:var(--muted);margin:0;word-break:keep-all}.mobile-chat{display:none}.hero-art{flex:0 0 43%;margin:0;position:relative;background:#e8eee3;border:1px solid #dbe4d6;border-radius:19px;overflow:hidden}.hero-art svg{display:block;width:100%;height:150px}.art-caption{display:none}
+.notebook{flex:1;min-height:0;background:var(--white);border:1px solid #d6dccb;border-radius:18px;overflow:hidden;box-shadow:0 5px 20px #263e3205;display:flex;flex-direction:column}.notebook-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 17px 10px;flex-shrink:0}.notebook-head h2{font-size:15px;margin:0;display:flex;align-items:center;gap:7px;white-space:nowrap}.notebook-head svg{width:18px;height:18px;stroke:var(--green);fill:none;stroke-width:1.6}.save-status{font-size:10px;color:var(--green);text-align:right;line-height:1.5}.save-status[data-state="error"]{color:#a9643c}.memo-tools{padding:0 17px 11px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0}.memo-tools span{font-size:10px;color:var(--muted);margin-right:3px}.memo-tools button{font-size:10px;padding:5px 9px;border:1px solid #dce3d3;border-radius:20px;background:#f2f5eb;white-space:nowrap}.memo-tools button:hover{background:var(--mint)}.memo-paper{position:relative;border-top:1px solid #e8eadc;border-bottom:1px solid #e8eadc;flex:1;min-height:0;display:flex;background:repeating-linear-gradient(to bottom,#fffefa 0,#fffefa 31px,#e8eddf 31px,#e8eddf 32px)}.memo-paper:before{content:"";position:absolute;top:0;bottom:0;left:32px;width:1px;background:#e8c9b6;pointer-events:none}.memo-paper textarea{display:block;width:100%;height:100%;min-height:0;resize:none;overflow:auto;border:0;background:transparent;color:var(--ink);font:14px/32px "Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:-.025em;padding:8px 18px 14px 44px;outline:none}.memo-paper textarea::placeholder{color:#98a08e}.memo-paper:focus-within{box-shadow:inset 0 0 0 2px #94b79a}.notebook-foot{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 17px}.memo-info{font-size:10px;color:var(--muted);line-height:1.6;min-width:0}.memo-info span{display:block}.memo-buttons{display:flex;gap:6px;flex-shrink:0}.memo-buttons button{font-size:11px;border-radius:8px;padding:8px 12px;border:1px solid var(--line);background:transparent;white-space:nowrap}.memo-buttons .save-memo{background:var(--green);border-color:var(--green);color:white}.memo-buttons button:disabled{opacity:.45}
+.inquiry-guide{position:relative;flex:0 0 auto;background:#eef2e8;border:1px solid var(--line);border-radius:11px;padding:0 13px;margin:0}.inquiry-guide>summary{cursor:pointer;font-size:12px;font-weight:700;padding:10px 0;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}.inquiry-guide>summary::-webkit-details-marker{display:none}.inquiry-guide>summary:after{content:"＋";font-size:16px;color:var(--green);line-height:16px}.inquiry-guide[open]>summary:after{content:"−"}.guide-content{position:absolute;bottom:calc(100% + 8px);left:0;right:0;max-height:min(530px,70dvh);overflow:auto;padding:17px;background:var(--white);border:1px solid var(--line);border-radius:15px;box-shadow:0 8px 40px #243c3826;z-index:6;overscroll-behavior:contain}.section-label{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}.section-label h2{font-size:14px;margin:0}.section-label>span{display:none}.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:17px}.step{text-align:center;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:10px 4px}.step-top{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:7px}.step-num{font-size:10px;color:#8b9a88;font-weight:700}.step svg{width:22px;height:22px;fill:none;stroke:var(--green);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.step strong{font-size:11px;display:block}.step p{font-size:10px;color:var(--muted);margin:5px 0 0}.starter{background:var(--white);border:1px solid var(--line);border-radius:15px;padding:15px}.starter-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}.starter h2{font-size:13px;margin:0}.starter-top span{font-size:10px;color:var(--muted)}.topic-tabs{display:flex;gap:6px;flex-wrap:wrap}.topic-tab{background:transparent;border:1px solid var(--line);border-radius:20px;padding:6px 10px;font-size:11px;display:flex;gap:5px;align-items:center}.topic-tab[aria-selected="true"]{background:var(--green);border-color:var(--green);color:white}.topic-tab:hover{border-color:var(--green)}.prompt-panel{padding-top:12px}.concept-pill{display:inline-flex;font-size:10px;color:var(--green);background:#eef2e8;border-radius:5px;padding:4px 7px;margin-bottom:7px}.prompt-question{font-size:14px;line-height:1.7;font-weight:700;word-break:keep-all;margin:0 0 6px}.prompt-footer{display:flex;gap:8px;align-items:center;justify-content:space-between}.prompt-hint{color:var(--muted);font-size:10px;margin:0;line-height:1.6}.copy-btn{white-space:nowrap;font-size:11px;padding:7px 10px;border:1px solid var(--line);background:transparent;border-radius:8px;display:flex;align-items:center;gap:5px}.copy-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5}.copy-btn:hover{background:var(--mint)}
+.idea-banner{display:flex;flex-direction:column;gap:12px;margin:15px 0 0;padding:15px;background:#edf0e5;border:1px solid #dfe4d5;border-radius:13px}.idea-copy{display:flex;align-items:center;gap:12px}.idea-icon{width:32px;height:32px;flex-shrink:0;display:grid;place-items:center;background:#fbf3ce;border-radius:10px}.idea-copy h2{font-size:12px;margin:0 0 5px}.idea-copy p{font-size:11px;color:var(--muted);margin:0;line-height:1.7;word-break:keep-all}.concepts{display:flex;gap:6px;flex-wrap:wrap;padding-left:44px}.concepts span{font-size:10px;border:1px solid #d0d8c6;border-radius:25px;padding:5px 9px;color:#597057;background:#f8f9f0}.site-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#879386;font-size:8px;border-top:1px solid var(--line);white-space:nowrap}.footer-en{letter-spacing:.07em}
+.chat-wrap{position:fixed;inset:0 0 0 auto;width:var(--sidebar-width);height:100dvh;min-height:0;margin:0;background:var(--white);border:0;border-left:1px solid #cedace;border-radius:0;display:flex;flex-direction:column;z-index:10;box-shadow:-8px 0 28px #263e3208;overflow:hidden}.chat-head{flex:0 0 auto;display:flex;align-items:center;padding:10px 14px;gap:9px;min-height:60px;border-bottom:1px solid var(--line)}.chat-avatar{width:32px;height:32px;background:var(--mint);border-radius:11px;display:grid;place-items:center;flex-shrink:0}.chat-avatar svg{width:27px;height:27px}.chat-head h2{font-size:14px;margin:0;white-space:nowrap}.chat-title-block{min-width:0}.chat-actions{display:flex;align-items:center;gap:7px;margin-left:auto}.mode-switch{display:flex;background:#eff3eb;border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}.mode-switch button{padding:6px 9px;font-size:10px;background:transparent;border:0;border-radius:5px;white-space:nowrap}.mode-switch button[aria-pressed="true"]{background:var(--white);color:var(--green);box-shadow:0 1px 4px #243c3814;font-weight:700}.expand-btn{padding:7px;margin:0;border:1px solid var(--line);border-radius:8px;background:transparent;display:grid;place-items:center}.expand-btn svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.collapse-btn{padding:6px 9px;background:transparent;border:1px solid var(--line);border-radius:8px;display:none;font-size:18px;line-height:18px}.frame-area{position:relative;background:white;flex:1;min-height:0}.frame-area iframe{display:block;border:0;height:100%;width:100%;background:white}.chat-foot{flex:0 0 auto;border-top:1px solid var(--line);padding:9px 14px;display:flex;justify-content:space-between;gap:10px;font-size:9px;color:var(--muted);align-items:center}.chat-foot a{margin-left:auto;text-decoration:none;border-bottom:1px solid #b0bdab;padding-bottom:2px;white-space:nowrap}.chat-foot a:hover{color:var(--green)}
+body[data-chat-mode="floating"] .chat-wrap:not(.expanded){inset:auto 16px 16px auto;width:min(460px,calc(var(--sidebar-width) - 32px));height:calc(100dvh - 32px);border:1px solid #cedace;border-radius:18px;box-shadow:0 15px 60px #243c3828}body[data-chat-mode="floating"] .collapse-btn{display:block}body[data-chat-mode="floating"] .chat-wrap:not(.expanded) .chat-head{cursor:grab;touch-action:none}.chat-wrap.minimized:not(.expanded){display:none!important}.chat-launcher{position:fixed;right:24px;bottom:24px;display:flex;align-items:center;gap:9px;border:0;border-radius:30px;background:var(--green);color:white;padding:15px 21px;box-shadow:0 8px 30px #347a6333;font-weight:700;font-size:14px;z-index:15}.chat-launcher[hidden]{display:none}.chat-wrap.expanded{inset:8px;width:auto;height:calc(100dvh - 16px);max-width:1300px;margin:auto;border:1px solid #cedace;border-radius:16px;z-index:35;box-shadow:0 0 0 100vmax #233c3877}.chat-wrap.expanded .collapse-btn{display:none}body.dragging-chat .chat-head{cursor:grabbing!important}body.dragging-chat iframe{pointer-events:none}body.dragging-chat{user-select:none}.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:var(--ink);color:white;padding:12px 18px;border-radius:12px;font-size:12px;z-index:45;transition:.2s;max-width:calc(100% - 24px);width:max-content;text-align:center}.toast.visible{opacity:1;transform:translate(-50%,0)}.skip-link{position:fixed;left:12px;top:-70px;background:white;padding:12px;z-index:50}.skip-link:focus{top:12px}
+@media(max-width:1100px) and (min-width:801px){:root{--sidebar-width:390px}.shell{padding:0 17px}.brand-title{font-size:15px}.brand-mark{width:32px;height:32px}.brand-sub{font-size:7px}.grade-tag{font-size:10px;padding:5px 7px}.hero-art{flex-basis:39%}.hero-art svg{height:130px}h1{font-size:26px}.intro{font-size:10px}.chat-head{gap:6px;padding:10px}.chat-head h2{font-size:12px}.chat-actions{gap:5px}.mode-switch button{padding:6px 7px}.chat-foot>span{display:none}.site-footer .footer-en{display:none}.memo-tools{gap:4px}.memo-tools span{display:none}.memo-tools button{padding:5px 7px;font-size:9px}.memo-info{font-size:9px}.memo-buttons button{font-size:10px;padding:7px 9px}}
+@media(max-width:950px) and (min-width:801px){.hero-art{display:none}.workspace-intro{height:130px}.intro-copy{min-width:0}h1{font-size:25px}.notebook-head{padding:11px 12px 9px}.notebook-head h2{font-size:13px}.save-status{font-size:9px}.memo-tools{padding:0 12px 9px}.notebook-foot{padding:9px 12px}}
+@media(max-width:800px){.shell{height:100dvh;margin:0;padding:0 14px;grid-template-rows:48px minmax(0,1fr)}.site-footer{display:none}.brand-title{font-size:15px}.brand-sub{font-size:7px}.brand-mark{width:29px;height:29px;border-radius:10px}.brand-mark svg{width:24px;height:24px}.grade-tag{font-size:10px;padding:5px 8px}.main-grid{display:grid;grid-template-rows:minmax(0,.48fr) minmax(0,.52fr);gap:10px;padding:10px 0}.left-column{gap:7px;max-width:none;width:100%;margin:0}.workspace-intro{height:24px;gap:0}.intro-copy{display:flex;align-items:center;gap:10px}.eyebrow{font-size:10px;white-space:nowrap}h1{font-size:14px;margin:0;line-height:1.3;white-space:nowrap}h1 br{display:none}h1 em:after{height:4px}.intro,.hero-art{display:none}.notebook{border-radius:13px}.notebook-head{padding:8px 12px 6px;gap:5px}.notebook-head h2{font-size:13px}.notebook-head svg{width:15px;height:15px}.save-status{font-size:9px}.memo-tools{padding:0 12px 7px;gap:5px;flex-wrap:nowrap;overflow:auto;scrollbar-width:none}.memo-tools::-webkit-scrollbar{display:none}.memo-tools span{display:none}.memo-tools button{font-size:9px;padding:4px 7px;flex-shrink:0}.memo-paper textarea{font-size:12px;line-height:27px;padding:5px 12px 12px 35px}.memo-paper{background:repeating-linear-gradient(to bottom,#fffefa 0,#fffefa 26px,#e8eddf 26px,#e8eddf 27px)}.memo-paper:before{left:25px}.notebook-foot{padding:7px 11px;gap:6px}.memo-info{display:flex;gap:5px;flex-wrap:wrap;font-size:9px}.memo-buttons{gap:5px}.memo-buttons button{font-size:10px;padding:6px 8px}.inquiry-guide{border-radius:9px;padding:0 11px}.inquiry-guide>summary{font-size:11px;padding:7px 0}.guide-content{max-height:calc(100dvh - 110px);padding:13px}.chat-wrap:not(.expanded){position:relative;inset:auto;width:100%;height:100%;min-height:0;max-width:none;margin:0;border:1px solid #cedace;border-radius:13px;z-index:5;box-shadow:none}.chat-head{min-height:0;padding:7px 10px;gap:6px}.chat-avatar{width:27px;height:27px;border-radius:9px}.chat-avatar svg{width:24px;height:24px}.chat-head h2{font-size:12px}.chat-actions{gap:5px}.mode-switch{padding:2px}.mode-switch button{padding:5px 7px;font-size:9px}.expand-btn{padding:6px}.expand-btn svg{width:14px;height:14px}.chat-foot{padding:6px 10px;font-size:9px}.chat-foot>span{display:none}.chat-foot a{margin-left:0}.collapse-btn{padding:4px 7px;font-size:16px}.chat-wrap.expanded{position:fixed;margin:0;max-width:none;width:auto;height:calc(100dvh - 16px);inset:8px}body[data-chat-mode="floating"] .chat-wrap:not(.expanded){position:fixed;inset:auto 14px 10px auto;width:calc(100vw - 28px);height:calc((100dvh - 78px)*.52);border-radius:14px;z-index:10}.journey{grid-template-columns:repeat(2,1fr)}.prompt-footer{flex-direction:column;align-items:flex-start}.copy-btn{align-self:flex-end}.chat-launcher{font-size:12px;padding:12px 17px;right:16px;bottom:16px}}
+@media(max-width:420px){.shell{padding:0 10px}.brand{gap:7px}.brand-title{font-size:13px}.grade-tag{font-size:9px;padding:5px 6px}.brand-sub{font-size:6px}.intro-copy{justify-content:space-between;gap:6px;width:100%}.workspace-intro h1{font-size:12px}.eyebrow{font-size:9px}.notebook-head h2{font-size:12px}.save-status{font-size:8px}.memo-info{font-size:8px;max-width:130px}.memo-buttons button{font-size:9px;padding:6px 7px}.chat-avatar{display:none}.chat-head h2{font-size:11px}.chat-actions{gap:4px}.mode-switch button{padding:5px 6px}.topic-tab{font-size:10px;padding:6px 9px}.starter{padding:12px}.starter-top span{display:none}.toast{font-size:10px;padding:10px 13px}.guide-content{padding:11px}.idea-copy h2{font-size:11px}.idea-copy p{font-size:10px}}
+@media(max-height:650px) and (min-width:801px){.shell{grid-template-rows:48px minmax(0,1fr) 22px}.main-grid{padding:10px 0 8px}.left-column{gap:8px}.workspace-intro{height:82px}.hero-art svg{height:82px}h1{font-size:23px;margin:4px 0}.eyebrow{font-size:10px}.intro{display:none}.notebook-head{padding-top:9px;padding-bottom:7px}.memo-tools{padding-bottom:8px}.notebook-foot{padding-top:7px;padding-bottom:7px}.memo-paper textarea{font-size:12px;line-height:28px}.inquiry-guide>summary{padding:8px 0}}
+@media(max-height:550px) and (max-width:800px){.shell{grid-template-rows:40px minmax(0,1fr)}.main-grid{gap:7px;padding:7px 0}.workspace-intro{display:none}.left-column{gap:5px}.memo-tools{display:none}.notebook-head{padding:6px 9px}.notebook-foot{padding:5px 9px}.memo-info span:first-child{display:none}.notebook-foot .memo-buttons button{padding:5px 7px}.inquiry-guide>summary{padding:5px 0}.chat-head{padding:5px 8px}.chat-foot{padding:4px 8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.prompt-actions{display:flex;gap:6px;flex-shrink:0}.prompt-actions .copy-btn{align-self:auto}
+@media(max-width:800px){.guide-content{max-height:min(530px,calc((100dvh - 68px)*.48 - 42px))}}
+
+</style>
 </head>
-
 <body>
-  <div class="shell">
+<a class="skip-link" href="#chat">챗봇으로 바로 가기</a>
+<div class="shell">
+<header class="site-header">
+ <a class="brand" href="#" aria-label="생각이 자라는 과학탐구 처음으로">
+  <span class="brand-mark" aria-hidden="true"><svg width="31" height="31" viewBox="0 0 40 40" fill="none"><path d="M20 16V9m0 3c-7 0-8-6-8-6 7-1 8 6 8 6Zm0-1c6 0 8-7 8-7-7-1-8 7-8 7Z" stroke="#c8e4ad" stroke-width="2" stroke-linejoin="round"/><rect x="8" y="16" width="24" height="18" rx="7" fill="#f4f4dd"/><circle cx="15" cy="24" r="2" fill="#347a63"/><circle cx="25" cy="24" r="2" fill="#347a63"/><path d="M17 29q3 2 6 0" stroke="#347a63" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+  <span class="brand-title">생각이 자라는 과학탐구<span class="brand-sub">SCIENCE INQUIRY LAB</span></span>
+ </a>
+ <div class="header-right"><span class="header-desc">작은 궁금증에서, 큰 생각으로.</span><span class="grade-tag"><span class="tiny-dot"></span>초등 3–6학년</span></div>
+</header>
+<main id="main">
+ <div class="main-grid">
+  <section class="left-column" aria-labelledby="page-title">
+   <div class="workspace-intro"><div class="intro-copy">
+   <div class="eyebrow">개념기반 탐구학습 × 과학</div>
+   <h1 id="page-title">궁금한 마음이<br> <em>과학이 되는 곳.</em></h1>
+   <p class="intro">자세히 보고, 스스로 묻고, 근거를 찾아요.<br>탐구한 사실을 연결하면 세상을 이해하는 생각이 자라요.</p>
+   <a class="mobile-chat" href="#chat">탐구 대화 시작하기 <span aria-hidden="true">↗</span></a>
+   </div>
+   <figure class="hero-art" aria-label="식물 관찰, 실험, 지구의 탐구 사례가 변화, 관계, 시스템이라는 개념으로 연결되는 과학탐구 그림">
+    <svg viewBox="0 0 620 286" role="img" aria-labelledby="art-title art-desc" xmlns="http://www.w3.org/2000/svg">
+     <title id="art-title">관찰에서 개념으로, 생각이 자라는 탐구</title><desc id="art-desc">돋보기와 새싹, 실험용 플라스크, 지구가 가운데 탐구 로봇을 둘러싸고 점선으로 연결됩니다. 위쪽에는 변화, 관계, 시스템이라는 개념이 떠 있습니다.</desc>
+     <defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".7" fill="#bac9b4"/></pattern><linearGradient id="orb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6f2d3"/><stop offset="1" stop-color="#cee0bc"/></linearGradient></defs>
+     <rect width="620" height="286" fill="url(#dots)"/><ellipse cx="312" cy="239" rx="215" ry="18" fill="#d8e2cf"/>
+     <circle cx="315" cy="157" r="98" fill="#f5f6e8" opacity=".7"/><circle cx="315" cy="157" r="116" stroke="#ced9c5" fill="none" stroke-dasharray="3 8"/>
+     <g stroke="#91aa88" stroke-width="1.5" stroke-dasharray="5 5" fill="none"><path d="M160 188Q215 87 278 92"/><path d="M365 96Q456 85 485 168"/><path d="M405 204Q439 220 466 217"/><path d="M192 216Q230 231 266 217"/></g>
+     <g transform="translate(133 25) rotate(-7 45 17)"><rect width="81" height="34" rx="17" fill="#fffefa" stroke="#d5dec9"/><circle cx="17" cy="17" r="4" fill="#dc9568"/><text x="33" y="22" font-size="13" font-family="Malgun Gothic,sans-serif" font-weight="700" fill="#65764f">변화</text></g>
+     <g transform="translate(267 13)"><rect width="89" height="34" rx="17" fill="#f9edb5" stroke="#e5d994"/><circle cx="19" cy="17" r="4" fill="#ad9547"/><text x="35" y="22" font-size="13" font-family="Malgun Gothic,sans-serif" font-weight="700" fill="#716634">관계</text></g>
+     <g transform="translate(407 29) rotate(7 48 17)"><rect width="100" height="34" rx="17" fill="#fffefa" stroke="#d5dec9"/><circle cx="18" cy="17" r="4" fill="#6d9f9e"/><text x="34" y="22" font-size="13" font-family="Malgun Gothic,sans-serif" font-weight="700" fill="#587575">시스템</text></g>
+     <!-- 자세히 관찰하는 새싹과 돋보기 -->
+     <g transform="translate(89 97)"><path d="M37 95h73l-10 44H49Z" fill="#d59873"/><ellipse cx="74" cy="95" rx="37" ry="8" fill="#e5b392"/><ellipse cx="74" cy="94" rx="28" ry="5" fill="#836552"/><path d="M74 95V50" stroke="#587d4d" stroke-width="4" stroke-linecap="round"/><path d="M74 70C44 73 38 52 38 45c25-1 36 9 36 25Z" fill="#80a868"/><path d="M74 56c1-25 20-34 38-29-1 26-17 35-38 29Z" fill="#4f8b65"/><path d="m77 53 24-18M70 65 47 51" stroke="#b8cda1" stroke-width="1.5" fill="none"/><g transform="translate(-1 -5) rotate(-18 37 40)"><circle cx="38" cy="38" r="29" fill="#fffefa" fill-opacity=".25" stroke="#456c5b" stroke-width="7"/><circle cx="38" cy="38" r="23" fill="none" stroke="#f8f8ed" stroke-width="2"/><path d="M38 70v30" stroke="#456c5b" stroke-width="10" stroke-linecap="round"/><path d="M22 26q4-10 16-10" stroke="#fffefa" stroke-width="4" fill="none" stroke-linecap="round"/></g></g>
+     <!-- 질문을 함께 생각하는 탐구 로봇 -->
+     <g transform="translate(245 80)"><path d="M67 37V14" stroke="#476e58" stroke-width="4"/><path d="M67 22C44 23 43 3 43 3c18-4 24 19 24 19Z" fill="#70a36b"/><path d="M67 15C68-1 82-8 93-4c-2 15-13 24-26 19Z" fill="#9cb77c"/><path d="M16 65H6v20h10m102-20h10v20h-10" fill="#b1c19a"/><rect x="13" y="38" width="108" height="86" rx="29" fill="#fffefa" stroke="#b4c5a5" stroke-width="2"/><rect x="28" y="56" width="78" height="47" rx="17" fill="#dce9cf"/><ellipse cx="49" cy="77" rx="5" ry="7" fill="#3f6958"/><ellipse cx="86" cy="77" rx="5" ry="7" fill="#3f6958"/><path d="M61 88q7 6 14 0" fill="none" stroke="#3f6958" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="37" cy="87" rx="6" ry="3" fill="#eabca0"/><ellipse cx="98" cy="87" rx="6" ry="3" fill="#eabca0"/><rect x="32" y="126" width="70" height="29" rx="12" fill="#7a9a68"/><path d="M51 154v8m32-8v8" stroke="#476e58" stroke-width="8" stroke-linecap="round"/><path d="m32 135-20 9m90-9 19-13" stroke="#7a9a68" stroke-width="10" stroke-linecap="round"/><circle cx="68" cy="139" r="6" fill="#e7edca"/><path d="M65 139h6m-3-3v6" stroke="#7a9a68" stroke-width="1.5"/></g>
+     <g transform="translate(371 81) rotate(5)"><path d="M0 0h65a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12H27L15 54l1-12H0a12 12 0 0 1-12-12V12A12 12 0 0 1 0 0Z" fill="#fffefa" stroke="#ced9c5"/><text x="1" y="27" font-family="Malgun Gothic,sans-serif" font-size="13" fill="#4f7158" font-weight="700">왜 그럴까?</text></g>
+     <!-- 지구와 실험: 다른 사례에서도 연결되는 생각 -->
+     <g transform="translate(457 107)"><circle cx="45" cy="44" r="42" fill="#8cb9b5" stroke="#f4f6e9" stroke-width="4"/><path d="m34 6-7 15-15 4 3 14 14 5 7 19 17 5 9-14-4-13-10-4-1-17 10-9Z" fill="#d7dfad"/><path d="m74 24-8 10 7 12 12-2m-7 19L66 69l-6 14" fill="#d7dfad"/><path d="M27 2Q-1 47 33 87M62 4q28 42-4 81M4 42h82" stroke="#e6f0dc" stroke-width="1" fill="none" opacity=".6"/><path d="M10 93h68" stroke="#7f9b7c" stroke-width="3" stroke-linecap="round"/></g>
+     <g transform="translate(397 173) rotate(10 29 39)"><path d="M17 0h26M21 2v22L4 56q-7 14 9 14h39q13 0 8-14L40 24V2" fill="#f7faf0" fill-opacity=".8" stroke="#668b7d" stroke-width="2.5" stroke-linecap="round"/><path d="m14 43-8 15q-4 8 8 8h36q10 0 6-8l-8-15q-16 6-34 0Z" fill="#edbf72"/><circle cx="28" cy="54" r="3" fill="#fff9dd"/><circle cx="42" cy="59" r="2" fill="#fff9dd"/><circle cx="27" cy="33" r="2" fill="#dcaf61"/><circle cx="37" cy="15" r="2.5" fill="#d7b771"/></g>
+     <g fill="none" stroke="#91a67d" stroke-width="1.8" stroke-linecap="round"><path d="M62 69v12m-6-6h12M543 199v10m-5-5h10M213 102v8m-4-4h8"/></g><circle cx="544" cy="92" r="3" fill="#d6aa70"/><circle cx="208" cy="60" r="2" fill="#90a783"/>
+     <g transform="translate(187 239)"><rect width="246" height="29" rx="14.5" fill="#fffefa" stroke="#d7dfcb"/><text x="123" y="19" text-anchor="middle" font-size="11" font-weight="700" font-family="Malgun Gothic,sans-serif" fill="#5f7659">관찰한 사실을 연결해, 개념으로!</text></g>
+    </svg>
+    <figcaption class="art-caption">OUR LITTLE SCIENCE LAB</figcaption>
+   </figure></div>
+   <section class="notebook" aria-labelledby="memo-title">
+    <div class="notebook-head"><h2 id="memo-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="15" height="19" rx="2"/><path d="M2 7h5M2 12h5M2 17h5M10 8h6m-6 4h6m-6 4h4"/></svg>나의 탐구 메모장</h2><span class="save-status" id="save-status" role="status" aria-live="polite">메모를 쓰면 자동 저장돼요</span></div>
+    <div class="memo-tools"><span>생각 정리 도우미</span><button type="button" data-memo-label="궁금한 점">＋ 궁금한 점</button><button type="button" data-memo-label="찾은 근거">＋ 찾은 근거</button><button type="button" data-memo-label="연결한 개념">＋ 연결한 개념</button><button type="button" id="question-to-memo">＋ 예시 질문 담기</button></div>
+    <div class="memo-paper"><textarea id="inquiry-memo" aria-label="중요한 탐구 내용 메모" aria-describedby="memo-storage-info" placeholder="대화에서 기억하고 싶은 내용을 적어 보세요.&#10;관찰한 것, 나의 생각, 새로 알게 된 개념…&#10;&#10;챗봇의 중요한 답변을 복사해 붙여 넣어도 좋아요." spellcheck="false"></textarea></div>
+    <div class="notebook-foot"><div class="memo-info" id="memo-storage-info"><span>이 브라우저에 자동 저장돼요.</span><span id="memo-count">0자</span></div><div class="memo-buttons"><button type="button" id="download-memo" disabled>파일로 저장 ↓</button><button type="button" class="save-memo" id="save-memo">메모 저장</button></div></div>
+   </section>
+   <details class="inquiry-guide"><summary>탐구 흐름과 예시 질문 펼쳐 보기</summary><div class="guide-content">
+   <div class="section-label"><h2>생각이 깊어지는 탐구의 흐름</h2><span>다시 묻고, 다시 탐구해도 좋아요</span></div>
+   <div class="journey" aria-label="관찰, 질문, 탐구, 개념 연결">
+    <div class="step"><div class="step-top"><span class="step-num">01</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M8 8h4m-2-2v4"/></svg></div><strong>자세히 관찰해요</strong><p>무엇이 보이나요?</p></div>
+    <div class="step"><div class="step-top"><span class="step-num">02</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H9l-5 3v-3H3V5a2 2 0 0 1 2-2Z"/><path d="M10 8a2 2 0 0 1 4 0c0 2-2 2-2 4m0 3h.01"/></svg></div><strong>질문을 만들어요</strong><p>왜 그럴까요?</p></div>
+    <div class="step"><div class="step-top"><span class="step-num">03</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8m-6 0v7L3 20q-1 2 2 2h14q3 0 2-2L14 9V2M6 16h12"/><circle cx="10" cy="18" r=".5"/></svg></div><strong>근거를 찾아요</strong><p>어떻게 알 수 있죠?</p></div>
+    <div class="step"><div class="step-top"><span class="step-num">04</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="m10 8-4 7m8-7 4 7M8 18h8"/></svg></div><strong>개념을 연결해요</strong><p>다른 곳에서도 그럴까?</p></div>
+   </div>
+   <section class="starter" aria-labelledby="starter-title">
+    <div class="starter-top"><h2 id="starter-title">이런 질문으로 시작해 보세요</h2><span>주제를 골라요</span></div>
+    <div class="topic-tabs" role="tablist" aria-label="탐구 주제">
+     <button class="topic-tab" type="button" id="tab-plant" role="tab" aria-selected="true" aria-controls="prompt-panel" data-topic="plant"><span aria-hidden="true">🌱</span>식물과 생명</button>
+     <button class="topic-tab" type="button" id="tab-water" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-topic="water"><span aria-hidden="true">💧</span>물질의 변화</button>
+     <button class="topic-tab" type="button" id="tab-force" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-topic="force"><span aria-hidden="true">🧲</span>힘과 운동</button>
+     <button class="topic-tab" type="button" id="tab-earth" role="tab" aria-selected="false" aria-controls="prompt-panel" tabindex="-1" data-topic="earth"><span aria-hidden="true">🌏</span>지구와 환경</button>
+    </div>
+    <div class="prompt-panel" id="prompt-panel" role="tabpanel" aria-labelledby="tab-plant" tabindex="0"><span class="concept-pill" id="prompt-concept">개념 렌즈 · 관계</span><p class="prompt-question" id="prompt-question">햇빛을 받는 양이 달라지면 식물은 어떻게 자랄까?</p><div class="prompt-footer"><p class="prompt-hint">질문을 복사해 챗봇에 붙여 넣고, 나의 생각도 들려주세요.</p><div class="prompt-actions"><button class="copy-btn" type="button" id="guide-to-memo">메모에 담기</button><button class="copy-btn" type="button" id="copy-prompt"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="8" height="9" rx="1.5"/><path d="M3 11H2V2h8v1"/></svg><span>질문 복사</span></button></div></div></div>
+   </section>
+ <aside class="idea-banner" aria-labelledby="big-idea-title"><div class="idea-copy"><span class="idea-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#a68b43" stroke-width="1.6" stroke-linecap="round"><path d="M9 17c-7-5-3-13 3-13s10 8 3 13v3H9Zm1 6h4M12 1V0M3 4l2 2m14 0 2-2M1 12h3m16 0h3M10 10l2 3 2-3m-2 3v4"/></svg></span><div><h2 id="big-idea-title">하나의 사실에서, 여러 상황에 적용할 수 있는 생각으로.</h2><p>“식물이 자랐어요”에서 “생물의 성장은 환경과 관계가 있어요”로 생각을 넓혀요.</p></div></div><div class="concepts" aria-label="탐구에 사용할 개념"><span>변화</span><span>관계</span><span>원인과 결과</span><span>시스템</span></div></aside>
+   </div></details>
+  </section>
+  <section class="chat-wrap" id="chat" aria-labelledby="chat-title">
+   <header class="chat-head"><span class="chat-avatar" aria-hidden="true"><svg width="33" height="33" viewBox="0 0 40 40" fill="none"><path d="M20 15V8m0 3C12 11 12 3 12 3c7-1 8 8 8 8Zm0-1c7 0 9-8 9-8-8 0-9 8-9 8Z" fill="#7ea76d"/><rect x="6" y="15" width="28" height="21" rx="8" fill="#fffefa" stroke="#8caf82"/><rect x="11" y="20" width="18" height="11" rx="4" fill="#dae9d0"/><circle cx="16" cy="25" r="1.8" fill="#347a63"/><circle cx="24" cy="25" r="1.8" fill="#347a63"/><path d="M18 29q2 1 4 0" stroke="#347a63" stroke-linecap="round"/></svg></span><div class="chat-title-block"><h2 id="chat-title">과학탐구 챗봇</h2></div><div class="chat-actions"><div class="mode-switch" role="group" aria-label="챗봇 배치"><button type="button" data-chat-layout="sidebar" aria-pressed="true">사이드바</button><button type="button" data-chat-layout="floating" aria-pressed="false">플로팅</button></div><button class="expand-btn" id="expand-chat" type="button" aria-label="대화창 크게 보기" aria-expanded="false" title="대화창 크게 보기"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4"/></svg></button><button type="button" class="collapse-btn" id="minimize-chat" aria-label="플로팅 대화창 접기" title="대화창 접기">−</button></div></header>
+   <div class="frame-area"><iframe id="science-chat" title="개념기반 과학 탐구학습 챗봇 대화창" src="https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_2_xN7gu_/webchat?__version__=2&amp;enableFileAttachment=true&amp;cliAgent=true" allow="clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+   <div class="chat-foot"><span>관찰과 실험으로 챗봇의 설명을 확인해요.</span><a id="direct-chat" href="https://copilotstudio.microsoft.com/environments/9324e73a-cd4e-e049-b7ba-177af6165e9c/bots/cr470_2_xN7gu_/webchat?__version__=2&amp;enableFileAttachment=true&amp;cliAgent=true" target="_blank" rel="noopener noreferrer">연결이 안 되면 새 창에서 열기 ↗</a></div>
+  </section>
+ </div>
 
-    <!-- 위쪽 제목 -->
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">🔬</div>
-
-        <div>
-          <strong>개념을 발견하는 과학 탐구실</strong>
-          <span>질문에서 시작해 개념으로 연결하는 교사용 AI 챗봇</span>
-        </div>
-      </div>
-
-      <div class="grade-badge">
-        초등 3~6학년 · 교사용
-      </div>
-    </header>
-
-    <main>
-
-      <!-- 개념기반 탐구학습 소개 -->
-      <section class="hero" aria-labelledby="main-title">
-
-        <div class="hero-copy">
-          <div class="eyebrow">
-            💡 CONCEPT-BASED INQUIRY SCIENCE
-          </div>
-
-          <h1 id="main-title">
-            현상을 묻고,<br>
-            <em>개념을 연결하는</em> 과학 수업
-          </h1>
-
-          <p>
-            학생의 호기심을 출발점으로 질문, 탐구, 증거, 설명을
-            이어 갑니다. 챗봇과 함께 단편적인 지식을 넘어
-            다른 상황에도 적용할 수 있는 과학 개념을 발견해 보세요.
-          </p>
-
-          <div class="legend" aria-label="수업 핵심 요소">
-            <span>🔎 현상 관찰</span>
-            <span>❓ 탐구 질문</span>
-            <span>🧪 증거 수집</span>
-            <span>🧩 개념 연결</span>
-            <span>🌏 새로운 상황에 전이</span>
-          </div>
-        </div>
-
-        <!-- 개념기반 탐구학습 이미지 -->
-        <div
-          class="concept-map"
-          role="img"
-          aria-label="현상, 질문, 증거, 전이가 핵심 개념을 중심으로 연결된 개념기반 탐구학습 이미지"
-        >
-          <div class="orbit" aria-hidden="true"></div>
-
-          <div class="core">
-            핵심 개념<br>
-            발견하기
-          </div>
-
-          <div class="node node-top">
-            👀 현상
-          </div>
-
-          <div class="node node-right">
-            ❓ 질문
-          </div>
-
-          <div class="node node-bottom">
-            🌱 전이
-          </div>
-
-          <div class="node node-left">
-            🧪 증거
-          </div>
-        </div>
-      </section>
-
-      <!-- 탐구학습 흐름 -->
-      <section class="flow" aria-label="개념기반 탐구학습 흐름">
-
-        <div class="step" style="--tint: #e6f2ff;">
-          <b>01 ENGAGE</b>
-          <strong>현상 만나기</strong>
-          <span>호기심을 일으키는 장면을 만납니다.</span>
-        </div>
-
-        <div class="step" style="--tint: #e7f8ef;">
-          <b>02 QUESTION</b>
-          <strong>질문 만들기</strong>
-          <span>알고 싶은 것을 탐구 질문으로 만듭니다.</span>
-        </div>
-
-        <div class="step" style="--tint: #fff3c7;">
-          <b>03 INQUIRE</b>
-          <strong>탐구하기</strong>
-          <span>관찰, 측정, 비교를 통해 증거를 수집합니다.</span>
-        </div>
-
-        <div class="step" style="--tint: #f1eaff;">
-          <b>04 CONCEPTUALIZE</b>
-          <strong>개념화하기</strong>
-          <span>현상에 숨어 있는 공통 원리와 관계를 설명합니다.</span>
-        </div>
-
-        <div class="step" style="--tint: #ffe9df;">
-          <b>05 TRANSFER</b>
-          <strong>전이하기</strong>
-          <span>발견한 개념을 새로운 현상에 적용합니다.</span>
-        </div>
-      </section>
-
-      <!-- 교사용 활용 영역 -->
-      <section class="workspace" aria-label="교사용 챗봇 활용 공간">
-
-        <aside class="guide">
-          <h2>수업 설계 도우미</h2>
-
-          <p>
-            아래 예시를 누르면 질문이 복사됩니다.
-            복사한 질문을 오른쪽 챗봇 입력창에 붙여 넣으세요.
-          </p>
-
-          <button
-            
+</main>
+<footer class="site-footer"><span>초등 3–6학년 과학 · 개념기반 탐구학습을 위한 대화 공간</span><span class="footer-en">OBSERVE · QUESTION · EXPLORE · CONNECT</span></footer>
+</div>
+<button type="button" class="chat-launcher" id="chat-launcher" aria-controls="chat" aria-expanded="false" hidden><span aria-hidden="true">✦</span>과학탐구 챗봇 열기</button>
+<div class="toast" role="status" aria-live="polite" id="toast"></div>
+<script>
+(()=>{
+ 'use strict';
+ const topics={plant:{concept:'관계',question:'햇빛을 받는 양이 달라지면 식물은 어떻게 자랄까?'},water:{concept:'변화',question:'얼음이 물로 변할 때 무엇이 달라지고, 무엇은 그대로일까?'},force:{concept:'원인과 결과',question:'장난감 자동차를 같은 힘으로 밀어도 바닥에 따라 움직임이 달라질까?'},earth:{concept:'시스템',question:'숲에서 나무가 줄어들면 다른 생물과 주변 환경에는 어떤 일이 생길까?'}};
+ const tabs=[...document.querySelectorAll('.topic-tab')],panel=document.getElementById('prompt-panel'),question=document.getElementById('prompt-question'),concept=document.getElementById('prompt-concept');
+ function selectTopic(tab){tabs.forEach(t=>{const selected=t===tab;t.setAttribute('aria-selected',String(selected));t.tabIndex=selected?0:-1});const item=topics[tab.dataset.topic];question.textContent=item.question;concept.textContent='개념 렌즈 · '+item.concept;panel.setAttribute('aria-labelledby',tab.id)}
+ tabs.forEach((tab,index)=>{tab.addEventListener('click',()=>selectTopic(tab));tab.addEventListener('keydown',e=>{let next;if(e.key==='ArrowRight')next=(index+1)%tabs.length;else if(e.key==='ArrowLeft')next=(index-1+tabs.length)%tabs.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=tabs.length-1;else return;e.preventDefault();selectTopic(tabs[next]);tabs[next].focus()})});
+ let toastTimer;function showToast(message){const toast=document.getElementById('toast');toast.textContent=message;toast.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('visible'),3800)}
+ document.getElementById('copy-prompt').addEventListener('click',async()=>{const value=question.textContent;let copied=false;try{if(navigator.clipboard){await navigator.clipboard.writeText(value);copied=true}}catch{}if(!copied){const input=document.createElement('textarea');input.value=value;input.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(input);input.select();try{copied=document.execCommand('copy')}catch{}input.remove();document.getElementById('copy-prompt').focus()}if(copied){showToast('질문을 복사했어요. 챗봇 입력창에 붙여 넣어 주세요.')}else{const range=document.createRange();range.selectNodeContents(question);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);showToast('질문을 선택했어요. 복사해서 챗봇에 붙여 넣어 주세요.')}});
+ const chat=document.getElementById('chat'),expand=document.getElementById('expand-chat'),launcher=document.getElementById('chat-launcher'),modeButtons=[...document.querySelectorAll('[data-chat-layout]')];
+ const backgroundElements=[document.querySelector('.left-column'),document.querySelector('.site-header'),document.querySelector('.idea-banner'),document.querySelector('.site-footer'),document.querySelector('.skip-link'),launcher];
+ let floatingPosition=null;
+ function positionFloating(){['left','top','right','bottom'].forEach(key=>chat.style.removeProperty(key));if(floatingPosition&&document.body.dataset.chatMode==='floating'&&!chat.classList.contains('expanded')&&!chat.classList.contains('minimized')){const rect=chat.getBoundingClientRect();floatingPosition.x=Math.max(8,Math.min(floatingPosition.x,innerWidth-rect.width-8));floatingPosition.y=Math.max(8,Math.min(floatingPosition.y,innerHeight-rect.height-8));Object.assign(chat.style,{left:floatingPosition.x+'px',top:floatingPosition.y+'px',right:'auto',bottom:'auto'})}}
+ function setExpanded(value){chat.classList.toggle('expanded',value);document.body.classList.toggle('chat-expanded',value);positionFloating();expand.setAttribute('aria-expanded',String(value));expand.setAttribute('aria-label',value?'대화창 원래 크기로 보기':'대화창 크게 보기');expand.title=value?'대화창 원래 크기로 보기':'대화창 크게 보기';backgroundElements.forEach(el=>el.inert=value);if(value){chat.setAttribute('role','dialog');chat.setAttribute('aria-modal','true')}else{chat.removeAttribute('role');chat.removeAttribute('aria-modal');expand.focus()}}
+ function setMinimized(value){chat.classList.toggle('minimized',value);chat.inert=value;launcher.hidden=!value;launcher.setAttribute('aria-expanded',String(!value));if(value)launcher.focus();else{positionFloating();expand.focus()}}
+ function setChatMode(mode,persist=true){if(chat.classList.contains('expanded'))setExpanded(false);document.body.dataset.chatMode=mode;setMinimized(false);positionFloating();modeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.chatLayout===mode)));if(persist){try{localStorage.setItem('science-inquiry-chat-layout-v1',mode)}catch{}}}
+ modeButtons.forEach(button=>button.addEventListener('click',()=>setChatMode(button.dataset.chatLayout)));expand.addEventListener('click',()=>setExpanded(!chat.classList.contains('expanded')));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&chat.classList.contains('expanded'))setExpanded(false)});document.getElementById('minimize-chat').addEventListener('click',()=>setMinimized(true));launcher.addEventListener('click',()=>setMinimized(false));document.querySelector('.mobile-chat').addEventListener('click',()=>setMinimized(false));document.querySelector('.skip-link').addEventListener('click',()=>setMinimized(false));
+ let savedMode='sidebar';try{if(localStorage.getItem('science-inquiry-chat-layout-v1')==='floating')savedMode='floating'}catch{}setChatMode(savedMode,false);if(document.activeElement===expand)expand.blur();
+ const dragHandle=chat.querySelector('.chat-head');dragHandle.title='플로팅 모드에서는 제목 부분을 끌어 창을 이동할 수 있어요';let drag=null;
+ dragHandle.addEventListener('pointerdown',event=>{if(event.button!==0||document.body.dataset.chatMode!=='floating'||chat.classList.contains('expanded')||event.target.closest('button,a'))return;const rect=chat.getBoundingClientRect();drag={pointerId:event.pointerId,offsetX:event.clientX-rect.x,offsetY:event.clientY-rect.y};dragHandle.setPointerCapture(event.pointerId);document.body.classList.add('dragging-chat');event.preventDefault()});
+ dragHandle.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.pointerId)return;floatingPosition={x:event.clientX-drag.offsetX,y:event.clientY-drag.offsetY};positionFloating()});
+ function endDrag(){drag=null;document.body.classList.remove('dragging-chat')}
+ dragHandle.addEventListener('pointerup',endDrag);dragHandle.addEventListener('pointercancel',endDrag);dragHandle.addEventListener('lostpointercapture',endDrag);window.addEventListener('resize',positionFloating);
+ const memo=document.getElementById('inquiry-memo'),status=document.getElementById('save-status'),count=document.getElementById('memo-count'),download=document.getElementById('download-memo'),memoKey='science-inquiry-memo-v1';let memoTimer,memoDirty=false;
+ function updateMemoCount(){count.textContent=memo.value.length.toLocaleString('ko-KR')+'자';download.disabled=!memo.value.trim()}
+ function showSaved(time){status.dataset.state='saved';status.textContent='저장됨 · '+new Intl.DateTimeFormat('ko-KR',{hour:'2-digit',minute:'2-digit'}).format(new Date(time))}
+ function saveMemo(manual=false){clearTimeout(memoTimer);try{const savedAt=Date.now();localStorage.setItem(memoKey,JSON.stringify({text:memo.value,savedAt}));memoDirty=false;showSaved(savedAt);if(manual)showToast('메모를 이 브라우저에 저장했어요.')}catch{status.dataset.state='error';status.textContent='브라우저 저장 불가 · 파일로 저장하세요';if(manual)showToast('브라우저 저장이 제한되어 있어요. 파일로 저장해 주세요.')}}
+ function memoChanged(){memoDirty=true;updateMemoCount();status.dataset.state='pending';status.textContent='저장 중…';clearTimeout(memoTimer);memoTimer=setTimeout(()=>saveMemo(),500)}
+ try{const saved=JSON.parse(localStorage.getItem(memoKey)||'null');if(saved&&typeof saved.text==='string'){memo.value=saved.text;if(Number.isFinite(saved.savedAt))showSaved(saved.savedAt)}}catch{status.dataset.state='error';status.textContent='브라우저 저장 확인 불가 · 파일로 저장하세요'}updateMemoCount();memo.addEventListener('input',memoChanged);memo.addEventListener('blur',()=>{if(memoDirty)saveMemo()});document.getElementById('save-memo').addEventListener('click',()=>saveMemo(true));window.addEventListener('pagehide',()=>{if(memoDirty)saveMemo()});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&memoDirty)saveMemo()});
+ function insertMemo(text){const start=memo.selectionStart,end=memo.selectionEnd;const prefix=start>0&&memo.value[start-1]!=='\n'?'\n':'';memo.setRangeText(prefix+text,start,end,'end');memo.focus();memoChanged()}
+ const guide=document.querySelector('.inquiry-guide');function addQuestionToMemo(){guide.open=false;insertMemo('[탐구 질문]\n'+question.textContent+'\n');showToast('지금 선택한 예시 질문을 메모에 담았어요.')}
+ document.querySelectorAll('[data-memo-label]').forEach(button=>button.addEventListener('click',()=>insertMemo('['+button.dataset.memoLabel+']\n')));document.getElementById('question-to-memo').addEventListener('click',addQuestionToMemo);document.getElementById('guide-to-memo').addEventListener('click',addQuestionToMemo);
+ document.addEventListener('pointerdown',event=>{if(guide.open&&!guide.contains(event.target))guide.open=false});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&guide.open){guide.open=false;guide.querySelector('summary').focus()}});
+ download.addEventListener('click',()=>{const now=new Date(),date=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');const file=new Blob(['\uFEFF생각이 자라는 과학탐구 — 나의 탐구 메모\n'+date+'\n\n'+memo.value],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(file),link=document.createElement('a');link.href=url;link.download='과학탐구_메모_'+date+'.txt';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);showToast('탐구 메모를 텍스트 파일로 저장했어요.')});
+})();
+</script>
+</body>
+</html>
